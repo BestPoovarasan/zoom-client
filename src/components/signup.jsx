@@ -1,11 +1,13 @@
 import React from "react";
 import "../style/signup.css";
 import Navbar from './navbar.jsx';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from 'formik';
 import {MDBInput,} from "mdb-react-ui-kit";
-// import axios from "axios";
+import axios from "axios";
 // import {BrowserRouter, Routes, Route, Link} from "react-router-dom";
+
+// <----------formik validate---------->
 const validate = (values) => {
   const errors = {};
   if (!values.firstName) {
@@ -27,7 +29,10 @@ const validate = (values) => {
   }
   return errors;
 };
+
 export default function Signup() {
+  let navigation = useNavigate();
+  // <------formik values---------->
   const formik = useFormik({
     initialValues: {
       firstName: '',
@@ -35,10 +40,16 @@ export default function Signup() {
       email: '',
     },
     validate,
-    onSubmit: values => {
-      alert(JSON.stringify(values, null, 2));
-    },
-  });
+  // <---------Axios------------>
+  onSubmit: async (values) => {
+    try {
+       await axios.post("https://zoomapps.herokuapp.com/register", values);
+// (JSON.stringify(values, null, 2));
+        navigation("/signin");
+    } catch (error) {
+    }
+},
+});
   return (
     <>
     <Navbar/>
@@ -75,7 +86,6 @@ export default function Signup() {
           <MDBInput
           id="email"
             Name="email"
-            className="mb-4"
             type="email"
             label="Email address"
             onChange={formik.handleChange}
