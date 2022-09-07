@@ -1,11 +1,12 @@
 import React from "react";
 import "../style/signup.css";
 import Navbar from './navbar.jsx';
+import { config } from "../config.js";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from 'formik';
 import {MDBInput,} from "mdb-react-ui-kit";
 import axios from "axios";
-// import {BrowserRouter, Routes, Route, Link} from "react-router-dom";
+
 
 // <----------formik validate---------->
 const validate = (values) => {
@@ -19,7 +20,7 @@ const validate = (values) => {
   if (!values.lastName) {
     errors.lastName = "Required";
   } else if (values.lastName.length >= 20) {
-    errors.lastName = "Must be 20 characters or less";
+    errors.lastName = "Below 20 Characters";
   }
 
   if (!values.email) {
@@ -31,20 +32,22 @@ const validate = (values) => {
 };
 
 export default function Signup() {
+  
   let navigation = useNavigate();
   // <------formik values---------->
   const formik = useFormik({
     initialValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
     },
     validate,
-  // <---------Axios------------>
+  // <---------Axios--API--Method---------->
   onSubmit: async (values) => {
     try {
-       await axios.post("https://zoomapps.herokuapp.com/register", values);
-// (JSON.stringify(values, null, 2));
+      const register = await axios.post(`${config.api}/signup`, values);
+       alert(register.data.message);
         navigation("/signin");
     } catch (error) {
     }
@@ -95,14 +98,13 @@ export default function Signup() {
           <div className="form-outline mb-4">
           <MDBInput
             Name="password"
-            className="mb-4"
             type="password"
             label="Password"
             onChange={formik.handleChange}
             value={formik.values.password}
           />
           </div>
-          <button  type={"submit"}
+          <button  type="submit"
             value="Submit" className="register btn btn-success btn-block mb-4">
             Register
           </button>
